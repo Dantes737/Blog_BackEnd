@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+    <div>
+      <a href="/posts">Posts</a>
+      <a href="/users">Users</a>
+      <a href="/coments">Coments</a>
+
+      <!-- <a href="/posts/add-form">Add</a> -->
+      <!-- <a href="/posts/add-comment">Add comment</a> -->
+    </div>
+    <div>  <%if(page){%>
+      <%-include(`${page}.ejs`)%>
+        <%}%></div>
+  </body>
+</html>
