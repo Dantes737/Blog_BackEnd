@@ -68,7 +68,7 @@ function paginatedResults(model) {
     const endIndex = page * limit;
 
     const results = {};
-
+    results.totalCount=await model.countDocuments().exec();
     if (endIndex < await model.countDocuments().exec()) {
       results.next = {
         page: page + 1,
