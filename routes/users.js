@@ -45,6 +45,17 @@ router.get("/", function (req, res, next) {
 });
 
 
+router.get("/u-profile/:id", function (req, res, next) {
+  let userID=req.params.id
+  User.findOne({ _id: userID }, function (err, doc) {
+    // mongoose.disconnect();
+    if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
+
+    res.status(200).json({ success: true, user: doc });
+  });
+
+});
+
 // router.get("/list", function (req, res, next) {
 //   //Вибірка усіх документів з бази
 //   User.find({}, function (err, docs) {
