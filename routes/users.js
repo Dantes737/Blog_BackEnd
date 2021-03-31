@@ -1,107 +1,81 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
-//1.Імпортували модуль
-const mongoose = require("mongoose");
+const User = require("../models/user");
+const { prepareToken } = require("../utils/token");
 
-//2. Встановлюємо з"єднання
-const url = process.env.MONGO_URL || "mongodb://localhost:27017/blogDB"
-mongoose.connect(url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+router.post(
+  "/signup",
 
-//3. Свторюємо схему
-const Schema = mongoose.Schema;
-// Створення схеми моделі
-const userScheme = new Schema({
-  name: String,
-  age: String,
-  country: String,
-  city: String,
-  avatar: String,
-  nick: String,
-  email: String,
-  friends: Array,
-  posts_id: Array
-});
+  function (req, res) {
+    console.log("req.headers");
+    console.log(req.headers);
 
-const User = mongoose.model("User", userScheme);
-
-router.get("/", function (req, res, next) {
-  //Вибірка усіх документів з бази
-  User.find({}, function (err, docs) {
-    // mongoose.disconnect();
-    if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
-
-    res.render("index", {
-      title: "All users",
-      page: "users-list",
-      users: docs,
+    var user = new User({
+      email: req.body.email,
+      nick: req.body.nick,
     });
-
-    // res.status(200).json({posts:docs });
-  });
-});
-
-
-router.get("/u-profile/:id", function (req, res, next) {
-  let userID=req.params.id
-  User.findOne({ _id: userID }, function (err, doc) {
-    // mongoose.disconnect();
-    if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
-
-    res.status(200).json({ success: true, user: doc });
-  });
-
-});
-
-// router.get("/list", function (req, res, next) {
-//   //Вибірка усіх документів з бази
-//   User.find({}, function (err, docs) {
-//     // mongoose.disconnect();
-//     if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
-
-//     res.status(200).json({ success: true, users: docs });
-//   });
-// });
-
-router.get("/list", paginatedResults(User), function (req, res) {
-  res.json(res.paginatedResults)
-});
-
-function paginatedResults(model) {
-  return async (req, res, next) => {
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
-
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-
-    const results = {};
-    results.totalCount=await model.countDocuments().exec();
-    if (endIndex < await model.countDocuments().exec()) {
-      results.next = {
-        page: page + 1,
-        limit: limit
-      }
-    }
-    if (startIndex > 0) {
-      results.previous = {
-        page: page - 1,
-        limit: limit
-      }
-    }
-    try {
-      results.results = await model.find().limit(limit).skip(startIndex).exec()
-      res.paginatedResults = results
-      next()
-    } catch (error) {
-      res.status(500).json({ message: error.message })
-    }
+    user.setPassword(req.body.password);
+    user.save()
+      .then((user) => {
+        const token = prepareToken(
+          {
+            id: user._id,
+            nick: user.nick,
+          },
+          req.headers
+        );
+        return res.status(201).json({
+          result: "Signuped successfully",
+          token,
+        });
+      })
+      .catch((err) => {
+        return res.status(500).json({ error: "Signup error" });
+      });
   }
-}
+);
+router.post("/login", function (req, res) {
+  if (!req.body.email) {
+    return res.status(401).json({ error: "Email is required" });
+  }
+  if (!req.body.password) {
+    return res.status(401).json({ error: "Password is required" });
+  }
+  User.findOne({ email: req.body.email })
+    .exec()
+    .then((user) => {
+      if (!user) {
+        return res.status(401).json({ error: "User not found" });
+      }
+      if (!user.validPassword(req.body.password)) {
+        return res.status(401).json({ error: "Pass error" });
+      }
+      const token = prepareToken(
+        {
+          id: user._id,
+          nick: user.nick,
+        },
+        req.headers
+      );
+      const expiresAt = new Date().getTime() + 36000000;
+      res.status(200).json({
+        result: "Authorized",
+        user: {
+          authData: {
+            nick: user._doc.nick,
+            email: user._doc.email,
+            id: user._doc._id,
 
-
+            access_token: token,
+          },
+          expiresAt,
+        },
+      });
+    })
+    .catch((err) => {
+      return res.status(401).json({ error: "Login error" });
+    });
+});
 
 module.exports = router;

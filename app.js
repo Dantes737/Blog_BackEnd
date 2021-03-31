@@ -6,10 +6,12 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
+var profilesRouter = require('./routes/profiles');
 var usersRouter = require('./routes/users');
 var comentsRouter = require('./routes/coments');
 var postsRouter = require('./routes/posts');
 
+const { parseBearer } = require("./utils/token");
 
 var app = express();
 app.use(cors());
@@ -24,7 +26,27 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// app.use((req, res, next) => {
+
+//   const openPathes = [
+//     "/users/login", "/users/signup","/profiles/list","/profiles",
+//     "/profiles/u-profile/:id",
+//   ];
+//   if (!openPathes.includes(req.path)) {
+//     try {
+//       console.log("req.headers.authorization");
+//       console.log(req.headers.authorization);
+
+//       req.user = parseBearer(req.headers.authorization, req.headers);
+//     } catch (err) {
+//       return res.status(401).json({ result: "Access Denied" });
+//     }
+//   }
+//   next();
+// });
+
 app.use('/', indexRouter);
+app.use('/profiles', profilesRouter);
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
 app.use('/coments', comentsRouter);
