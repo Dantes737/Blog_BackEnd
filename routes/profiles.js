@@ -24,7 +24,8 @@ const profileScheme = new Schema({
   nick: String,
   posts_id: Array,
   avatarIMG: String,
-  followed: Boolean
+  followed: Boolean,
+  status:String
 });
 
 const Profile = mongoose.model("Profile", profileScheme);
@@ -54,6 +55,30 @@ router.get("/u-profile/:id", function (req, res, next) {
 
     res.status(200).json({ success: true, user: doc });
   });
+
+});
+
+router.get("/status/:id", function (req, res, next) {
+  let userID = req.params.id
+  Profile.findOne({ _id: userID }, function (err, doc) {
+    // mongoose.disconnect();
+    if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
+
+    res.status(200).json({ success: true, user: doc });
+  });
+
+});
+
+router.put("/status", async function (req, res, next) {
+  await Profile.findByIdAndUpdate({ _id: req.body.userId },
+    { $set: { status: req.body.status } },{new: true}, function (err, doc) {
+      // mongoose.disconnect();
+      if (err)
+        return res
+          .status(500)
+          .json({ success: false, err: { msg: "Saving fail!" } });
+      res.json({ success: true, message: "Saving status!", profile: doc });
+    });
 
 });
 
