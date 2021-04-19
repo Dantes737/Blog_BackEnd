@@ -26,24 +26,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use((req, res, next) => {
-
-//   const openPathes = [
-//     "/users/login", "/users/signup","/profiles/list","/profiles",
-//     "/profiles/u-profile/:id",
-//   ];
-//   if (!openPathes.includes(req.path)) {
-//     try {
-//       console.log("req.headers.authorization");
-//       console.log(req.headers.authorization);
-
-//       req.user = parseBearer(req.headers.authorization, req.headers);
-//     } catch (err) {
-//       return res.status(401).json({ result: "Access Denied" });
-//     }
-//   }
-//   next();
-// });
 
 app.use('/', indexRouter);
 app.use('/profiles', profilesRouter);
