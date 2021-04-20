@@ -8,7 +8,7 @@ const apiErrorHandler=require('./error/api-error-handler.js');
 
 const indexRouter = require('./routes/index');
 const profilesRouter = require('./routes/profiles');
-const usersRouter = require('./routes/users');
+const userRouter = require('./routes/user-auth');
 const comentsRouter = require('./routes/coments');
 const postsRouter = require('./routes/posts');
 
@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/profiles', profilesRouter);
-app.use('/users', usersRouter);
+app.use('/user-auth', userRouter);
 app.use('/posts', postsRouter);
 app.use('/coments', comentsRouter);
 

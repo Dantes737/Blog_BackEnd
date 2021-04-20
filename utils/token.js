@@ -1,24 +1,10 @@
-//---------------------- /utils/token.js ------------------------------
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const tokenKey =process.env.SECRET_KEY;
 
-const expiresIn = '60m'
-const tokenKey = 'my-token-key'   // Save in .env !!!
+function prepareToken(data) {
+    return jwt.sign(data, tokenKey, { expiresIn: '60m'});
+};
 
-function parseBearer(bearer, headers) {
-    let token=null
-    if (bearer.startsWith('Bearer ')) {
-       token = bearer.slice(7, bearer.length);
-    }    
-    const decoded = jwt.verify(token, prepareSecret(headers));
-    return decoded;
-}
 
-function prepareToken(data, headers) {
-    return jwt.sign(data, prepareSecret(headers), { expiresIn: '60m'});
-}
-
-function prepareSecret(headers) {
-    return tokenKey + headers['user-agent'] + headers['accept-language'];
-}
-
-module.exports = { parseBearer, prepareToken };
+module.exports = { prepareToken };

@@ -1,12 +1,8 @@
-//1.Імпортували модуль
+require('dotenv').config();
 const mongoose = require("mongoose");
 
-//2. Встановлюємо з"єднання
-const url = process.env.MONGO_URL || "mongodb://localhost:27017/blogDB"
-mongoose.connect(url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const url = process.env.MONGO_URL;
+mongoose.connect(url, { useNewUrlParser: true,useUnifiedTopology: true});
 
 //3. Свторюємо схему
 const Schema = mongoose.Schema;

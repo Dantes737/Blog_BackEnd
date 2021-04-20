@@ -1,5 +1,11 @@
-const mongoose = require("mongoose");
+require('dotenv').config();
 const crypto = require("crypto");
+const mongoose = require("mongoose");
+
+//-------------Connecting to DB----------------------------
+const url = process.env.MONGO_URL ;
+mongoose.connect(url, {useNewUrlParser: true,useUnifiedTopology: true});
+//-----------------------------------------
 
 const { Schema } = mongoose;
 
