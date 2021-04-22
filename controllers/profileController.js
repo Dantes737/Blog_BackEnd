@@ -31,9 +31,18 @@ class ProfileController {
         }
     };
 
+    // async getOneProfile(req, res, next) {
+    //     let userID = req.params.id
+    //     Profile.findOne({ _id: userID }, function (err, doc) {
+    //         // mongoose.disconnect();
+    //         if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
+
+    //         res.status(200).json({ success: true, user: doc });
+    //     });
+    // };
     async getOneProfile(req, res, next) {
-        let userID = req.params.id
-        Profile.findOne({ _id: userID }, function (err, doc) {
+        let userNick = req.params.nick
+        Profile.findOne({ nick: userNick }, function (err, doc) {
             // mongoose.disconnect();
             if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
 
@@ -42,7 +51,7 @@ class ProfileController {
     };
 
     async updateStatus(req, res, next) {
-        await Profile.findByIdAndUpdate({ _id: req.body.userId },
+        await Profile.findOneAndUpdate({ nick: req.body.userNick },
             { $set: { status: req.body.status } }, { new: true }, function (err, doc) {
                 // mongoose.disconnect();
                 if (err)
