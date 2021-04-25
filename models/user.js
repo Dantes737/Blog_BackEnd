@@ -10,8 +10,8 @@ mongoose.connect(url, {useNewUrlParser: true,useUnifiedTopology: true});
 const { Schema } = mongoose;
 
 const UsersSchema = new Schema({
-  email: String,
   nick: String,
+  email: String,
   hash: String, //поле, де буде зберігатися хеш пароля
   salt: String, //поле, де буде зберігатися ключ
 });
