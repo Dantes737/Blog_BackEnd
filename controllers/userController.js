@@ -22,7 +22,7 @@ class UserController {
           city: "Enter your city",
           country: "country",
           email:  user.email,
-          friends: [],
+          friends: {},
           name: "Enter your name",
           nick: user.nick,
           posts_id: [],

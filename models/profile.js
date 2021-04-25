@@ -12,7 +12,7 @@ const profileScheme = new Schema({
   city: String,
   country: String,
   email: String,
-  friends: Array,
+  friends: Object,
   name: String,
   nick: String,
   posts_id: Array,
