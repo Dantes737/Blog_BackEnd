@@ -12,12 +12,11 @@ const profileScheme = new Schema({
   city: String,
   country: String,
   email: String,
-  friends: Object,
+  friends: Array,
   name: String,
   nick: String,
   posts_id: Array,
   avatarIMG: String,
-  followed: Boolean,
   status:String
 });
 

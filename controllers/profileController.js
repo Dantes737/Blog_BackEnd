@@ -43,7 +43,7 @@ class ProfileController {
     };
 
     async updateStatus(req, res, next) {
-        await Profile.findOneAndUpdate({ _id: req.body.userId },
+        await Profile.findByIdAndUpdate({ _id: req.body.userId },
             { $set: { status: req.body.status } }, { new: true }, function (err, doc) {
                 // mongoose.disconnect();
                 if (err)
@@ -57,8 +57,8 @@ class ProfileController {
 
     async followUpdate(req, res) {
         // Знаходимо і оновлюємо
-        Profile.findByIdAndUpdate({ _id: req.body.userId },
-            { $set: { followed: true } }, { new: true }, function (err, doc) {
+        Profile.findOneAndUpdate({ _id: req.body.authId },
+            { $push: { friends: req.body.userNick } }, { new: true }, function (err, doc) {
                 // mongoose.disconnect();
                 if (err)
                     return res
@@ -69,15 +69,15 @@ class ProfileController {
     };
 
     async unfollowUpdate(req, res) {
-        Profile.findByIdAndUpdate({ _id: req.body.userId },
-            { $set: { followed: false } }, { new: true }, function (err, doc) {
+        Profile.findByIdAndUpdate({ _id: req.body.authId },
+            { $pull: { friends: req.body.userNick } }, { new: true }, function (err, doc) {
                 // mongoose.disconnect();
 
                 if (err)
                     return res
                         .status(500)
                         .json({ success: false, err: { msg: "Saving fail!" } });
-                res.json({ success: true, message: "Saving follow status!", profile: doc });
+                res.json({ success: true, message: "Saving unfollow status!", profile: doc });
             });
     };
 };

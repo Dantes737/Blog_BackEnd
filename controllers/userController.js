@@ -21,13 +21,12 @@ class UserController {
           age: "age",
           city: "Enter your city",
           country: "country",
-          email:  user.email,
-          friends: {},
+          email: user.email,
+          friends: [],
           name: "Enter your name",
           nick: user.nick,
           posts_id: [],
-          avatarIMG: "",
-          followed: false,
+          avatarIMG: "https://walkersarewelcome.org.uk/wp-content/uploads/computer-icons-google-account-icon-design-login-png-favpng-jFjxPac6saRuDE3LiyqsYTEZM.jpg",
           status: "Your status"
         });
         profile.save();
