@@ -11,12 +11,13 @@ class CommentController {
     };
 
     async addComments(req, res, next) {
+        let currentDate = (new Date()).toLocaleDateString().split("/");
         //5. Створення документа
         const comment = new Comments({
             text: req.body.text,
             userNick: req.body.nick,
             post_ID: req.body.postID,
-            data: "00-00-00"
+            data: currentDate[0]
         });
         //6. Збереження документа
         await comment.save();
