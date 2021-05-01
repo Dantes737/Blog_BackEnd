@@ -1,4 +1,4 @@
-const Posts = require('../models/post.js')
+const Posts = require('../models/post.js');
 
 class PostController {
     /* GET posts BACK-END. */
@@ -26,9 +26,16 @@ class PostController {
             res.status(200).json({ success: true, posts: docs });
         });
     };
+    getOnlyUserPosts(req, res, next) {
+        Posts.find({userNick:req.params.nick}, function (err, docs) {
+            // mongoose.disconnect();
+            if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
+            res.status(200).json({ success: true, posts: docs });
+        });
+    };
 
-  async  addPost(req, res, next) {
-    let currentDate = (new Date()).toLocaleDateString().split("/");
+    async addPost(req, res, next) {
+        let currentDate = (new Date()).toLocaleDateString().split("/");
 
         const post = new Posts({
             text: req.body.text,
@@ -39,8 +46,11 @@ class PostController {
             coments: [],
         });
         //6. Збереження документа
-        await post.save();
-       await Posts.find({}, function (err, docs) {
+        await post.save(function (err, userPost) {
+            if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
+        });
+
+        await Posts.find({}, function (err, docs) {
             // mongoose.disconnect();
             if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
             res.status(200).json({ success: true, posts: docs });
@@ -86,10 +96,7 @@ class PostController {
     // });
 
     deletePost(req, res, next) {
-        console.log(req.query);
-        console.log(req.body);
-        //axios.delete(apiEndpoints.products.delete,{data:{id}})
-        Posts.findOneAndDelete({ _id: req.body.id }, function (err, doc) {
+        Posts.findByIdAndDelete({ _id: req.params.id }, function (err, doc) {
             if (err)
                 return res
                     .status(500)
