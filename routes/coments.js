@@ -4,7 +4,7 @@ const CommentController = require('../controllers/commentsController.js')
 
 
 router.get("/comments-list", CommentController.getComments);
-router.post("/add-comment", CommentController.addComments)
-
-
+router.get("/user-comments/:nick",CommentController.getOnlyUserComments);
+router.post("/add-comment", CommentController.addComments);
+router.delete("/deleteComment/:id",CommentController.deleteComment);
 module.exports = router;

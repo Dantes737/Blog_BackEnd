@@ -9,7 +9,13 @@ class CommentController {
             res.status(200).json({ success: true, comments: docs });
         });
     };
-
+    async getOnlyUserComments(req, res, next) {
+        await Comments.find({ userNick: req.params.nick }, function (err, docs) {
+            // mongoose.disconnect();
+            if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
+            res.status(200).json({ success: true, comments: docs });
+        });
+    };
     async addComments(req, res, next) {
         let currentDate = (new Date()).toLocaleDateString().split("/");
         //5. Створення документа
@@ -29,16 +35,14 @@ class CommentController {
 
     };
 
-    deletePost(req, res, next) {
-        console.log(req.query);
-        console.log(req.body);
-        //axios.delete(apiEndpoints.products.delete,{data:{id}})
-        Comments.findOneAndDelete({ _id: req.body.id }, function (err, doc) {
+    deleteComment(req, res, next) {
+        console.log(req.params.id);
+        Comments.findOneAndDelete({ _id: req.params.id }, function (err, doc) {
             if (err)
                 return res
                     .status(500)
                     .json({ success: false, err: { msg: "Saving faild!" } });
-            res.json({ success: true });
+            res.json({ success: true, msg: "Comment deleted!" });
         });
     };
 
