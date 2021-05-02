@@ -42,10 +42,9 @@ class CommentController {
                 return res
                     .status(500)
                     .json({ success: false, err: { msg: "Saving faild!" } });
-            res.json({ success: true, msg: "Comment deleted!" });
+                    res.json({ success: true,comment:doc });
         });
     };
-
 };
 
 module.exports = new CommentController();

@@ -96,12 +96,12 @@ class PostController {
     // });
 
     deletePost(req, res, next) {
-        Posts.findByIdAndDelete({ _id: req.params.id }, function (err, doc) {
+        Posts.findOneAndDelete({ _id: req.params.id }, function (err, doc) {
             if (err)
                 return res
                     .status(500)
                     .json({ success: false, err: { msg: "Saving faild!" } });
-            res.json({ success: true });
+            res.json({ success: true,post:doc });
         });
     };
 
