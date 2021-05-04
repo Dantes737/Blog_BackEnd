@@ -8,6 +8,6 @@ router.get("/u-profile/:id", checkAuth, ProfileController.getOneProfile);
 router.put("/status", checkAuth, ProfileController.updateStatus);
 router.post("/follow", checkAuth, ProfileController.followUpdate);
 router.post("/unfollow", checkAuth, ProfileController.unfollowUpdate);
-
+router.put("/image", checkAuth, ProfileController.updateImage);
 
 module.exports = router;

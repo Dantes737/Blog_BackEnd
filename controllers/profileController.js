@@ -54,6 +54,18 @@ class ProfileController {
             });
 
     };
+    async updateImage(req, res, next) {
+        await Profile.findByIdAndUpdate({ _id: req.body.userId },
+            { $set: { avatarIMG: req.body.image } }, { new: true }, function (err, doc) {
+                // mongoose.disconnect();
+                if (err)
+                    return res
+                        .status(500)
+                        .json({ success: false, err: { msg: "Saving fail!" } });
+                res.json({ success: true, message: "Saving image!", profile: doc });
+            });
+
+    };
 
     async followUpdate(req, res) {
         // Знаходимо і оновлюємо
