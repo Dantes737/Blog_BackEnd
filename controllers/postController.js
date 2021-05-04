@@ -40,7 +40,7 @@ class PostController {
         const post = new Posts({
             text: req.body.text,
             data: currentDate[0],
-            img: "https://cdn.pixabay.com/photo/2017/11/28/11/01/road-2983344_960_720.jpg",
+            img: req.body.imageSrc,
             userNick: req.body.nick,
             title: req.body.title,
             coments: [],
