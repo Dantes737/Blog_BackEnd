@@ -31,7 +31,6 @@ class ProfileController {
         }
     };
 
-
     async getOneProfile(req, res, next) {
         console.log(req.params.id);
         Profile.findOne({ _id: req.params.id }, function (err, doc) {
@@ -51,6 +50,36 @@ class ProfileController {
                         .status(500)
                         .json({ success: false, err: { msg: "Saving fail!" } });
                 res.json({ success: true, message: "Saving status!", profile: doc });
+            });
+
+    };
+    async updateName(req, res, next) {
+        await Profile.findByIdAndUpdate({ _id: req.body.userId },
+            { $set: { name: req.body.name } }, { new: true }, function (err, doc) {
+                // mongoose.disconnect();
+                if (err)
+                    return res
+                        .status(500)
+                        .json({ success: false, err: { msg: "Saving fail!" } });
+                res.json({ success: true, message: "Saving name!", profile: doc });
+            });
+
+    };
+    async updateProfile(req, res, next) {
+        await Profile.findByIdAndUpdate({ _id: req.body.profileID },
+            {
+                $set: {
+                    age: req.body.age,
+                    country: req.body.country,
+                    city: req.body.city
+                }
+            }, { new: true }, function (err, doc) {
+                // mongoose.disconnect();
+                if (err)
+                    return res
+                        .status(500)
+                        .json({ success: false, err: { msg: "Saving fail!" } });
+                res.json({ success: true, message: "Saving image!", profile: doc });
             });
 
     };
@@ -91,6 +120,13 @@ class ProfileController {
                         .json({ success: false, err: { msg: "Saving fail!" } });
                 res.json({ success: true, message: "Saving unfollow status!", profile: doc });
             });
+    };
+    getAllUsers(req, res, next) {
+        Profile.find({}, function (err, docs) {
+            // mongoose.disconnect();
+            if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
+            res.status(200).json({ success: true, users: docs });
+        });
     };
 };
 

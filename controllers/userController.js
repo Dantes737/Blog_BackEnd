@@ -6,7 +6,25 @@ const { prepareToken } = require("../utils/token");
 class UserController {
   //------------------------REGISTRATION-------------------------
   async signUpUser(req, res) {
-    console.log(req.body);
+////------------------------VALIDATORS-----------------------------------/////////////
+    let userNickExist = await User.exists({ nick: req.body.nick });
+    if (userNickExist) {
+      return res.status(201).json(
+        {
+          result: "warning",
+          message: "User with such nick already exists!"
+        });
+    };
+
+    let userEmailExist = await User.exists({ email: req.body.email });
+    if (userEmailExist) {
+      return res.status(201).json(
+        {
+          result: "warning",
+          message: "User with such Email already exists!"
+        });
+    };
+////------------------------VALIDATORS----------------------------------------/////////////
     const user = new User({
       nick: req.body.nick,
       email: req.body.email
