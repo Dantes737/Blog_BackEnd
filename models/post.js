@@ -11,8 +11,7 @@ text:String,
 data:String,
 img:String,
 userNick:String,
-title:String,
-coments:Array
+title:String
 });
 
 module.exports = mongoose.model("Posts", PostScheme);

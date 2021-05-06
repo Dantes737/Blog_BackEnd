@@ -1,12 +1,38 @@
 const User = require("../models/user.js");
 const Profile = require("../models/profile.js");
-
+const ApiError = require('../error/ApiError.js');
 const { prepareToken } = require("../utils/token");
+const Validator = require('../utils/validators.js')
 
 class UserController {
   //------------------------REGISTRATION-------------------------
-  async signUpUser(req, res) {
-////------------------------VALIDATORS-----------------------------------/////////////
+  async signUpUser(req, res, next) {
+    ////------------------------VALIDATORS-----------------------------------/////////////
+    if (!req.body.nick) {
+      next(ApiError.badRequest("Nick is required"));
+      return;
+    }
+    if (!req.body.email) {
+      next(ApiError.badRequest("Email is required"));
+      return;
+    }
+    if (!req.body.password) {
+      next(ApiError.badRequest("Password is required"));
+      return;
+    }
+    if (!Validator.validateEmail(req.body.email)) {
+      next(ApiError.badRequest("Not valid email"));
+      return;
+    }
+    if (!Validator.validatePassword(req.body.password)) {
+      next(ApiError.badRequest("Not valid password. Should contain at least one digit,one lower case,one upper case, at least 8 from the mentioned characters"));
+      return;
+    }
+    if (!Validator.validateNick(req.body.nick)) {
+      next(ApiError.badRequest("Not valid nick"));
+      return;
+    }
+
     let userNickExist = await User.exists({ nick: req.body.nick });
     if (userNickExist) {
       return res.status(201).json(
@@ -24,7 +50,7 @@ class UserController {
           message: "User with such Email already exists!"
         });
     };
-////------------------------VALIDATORS----------------------------------------/////////////
+    ////------------------------VALIDATORS----------------------------------------/////////////
     const user = new User({
       nick: req.body.nick,
       email: req.body.email
@@ -43,11 +69,10 @@ class UserController {
           friends: [],
           name: "Enter your name",
           nick: user.nick,
-          posts_id: [],
           avatarIMG: "https://walkersarewelcome.org.uk/wp-content/uploads/computer-icons-google-account-icon-design-login-png-favpng-jFjxPac6saRuDE3LiyqsYTEZM.jpg",
           status: "Your status"
         });
-        profile.save();
+       await profile.save();
         /////////////
         const token = prepareToken(
           {
@@ -56,30 +81,40 @@ class UserController {
           }
         );
         return res.status(201).json({
-          result: "Signuped successfully",
-          token,
+          result: "Success!"
         });
       })
       .catch((err) => {
-        return res.status(500).json({ error: "Signup error" });
+        next(ApiError.badRequest("SignIn error!"));
+      return;
       });
   };
   //--------------------------AUTHORIZATION-----------------------------
-  async loginUser(req, res) {
+  async loginUser(req, res, next) {
     if (!req.body.email) {
-      return res.status(401).json({ error: "Email is required" });
+      next(ApiError.authError("Email is required!"));
+      return;
     }
     if (!req.body.password) {
-      return res.status(401).json({ error: "Password is required" });
+      next(ApiError.authError("Password is required"));
+      return;
     }
-    User.findOne({ email: req.body.email })
+   await User.findOne({ email: req.body.email })
       .exec()
       .then((user) => {
         if (!user) {
-          return res.status(401).json({ error: "User not found" });
+          return res.status(201).json(
+            {
+              result: "warning",
+              message: "User not found!"
+            });
         }
         if (!user.validPassword(req.body.password)) {
-          return res.status(401).json({ error: "Pass error" });
+          return res.status(201).json(
+            {
+              result: "warning",
+              message: "Pass error!"
+            });
         }
         const token = prepareToken(
           {
@@ -103,7 +138,8 @@ class UserController {
         });
       })
       .catch((err) => {
-        return res.status(401).json({ error: "Login error" });
+        next(ApiError.authError("Login error"));
+        return;
       });
   };
 };

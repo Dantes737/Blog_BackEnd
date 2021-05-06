@@ -1,11 +1,15 @@
-const Comments = require('../models/comment.js')
+const Comments = require('../models/comment.js');
+const ApiError = require('../error/ApiError.js');
 
 class CommentController {
 
-    getComments(req, res, next) {
-        Comments.find({}, function (err, docs) {
+    async getComments(req, res, next) {
+        await Comments.find({}, function (err, docs) {
             // mongoose.disconnect();
-            if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
+            if (err) {
+                next(ApiError.dataBaseErrors('Bad Gateway'));
+                return;
+            };
             res.status(200).json({ success: true, comments: docs });
         });
     };
@@ -35,14 +39,14 @@ class CommentController {
 
     };
 
-    deleteComment(req, res, next) {
+    async deleteComment(req, res, next) {
         console.log(req.params.id);
-        Comments.findOneAndDelete({ _id: req.params.id }, function (err, doc) {
+        await Comments.findOneAndDelete({ _id: req.params.id }, function (err, doc) {
             if (err)
                 return res
                     .status(500)
                     .json({ success: false, err: { msg: "Saving faild!" } });
-                    res.json({ success: true,comment:doc });
+            res.json({ success: true, comment: doc });
         });
     };
 };

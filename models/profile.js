@@ -15,7 +15,6 @@ const profileScheme = new Schema({
   friends: Array,
   name: String,
   nick: String,
-  posts_id: Array,
   avatarIMG: String,
   status:String
 });

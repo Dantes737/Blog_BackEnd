@@ -33,7 +33,7 @@ class ProfileController {
 
     async getOneProfile(req, res, next) {
         console.log(req.params.id);
-        Profile.findOne({ _id: req.params.id }, function (err, doc) {
+        await Profile.findOne({ _id: req.params.id }, function (err, doc) {
             // mongoose.disconnect();
             if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
 
@@ -98,7 +98,7 @@ class ProfileController {
 
     async followUpdate(req, res) {
         // Знаходимо і оновлюємо
-        Profile.findOneAndUpdate({ _id: req.body.authId },
+        await Profile.findOneAndUpdate({ _id: req.body.authId },
             { $push: { friends: req.body.userNick } }, { new: true }, function (err, doc) {
                 // mongoose.disconnect();
                 if (err)
@@ -110,7 +110,7 @@ class ProfileController {
     };
 
     async unfollowUpdate(req, res) {
-        Profile.findByIdAndUpdate({ _id: req.body.authId },
+        await Profile.findByIdAndUpdate({ _id: req.body.authId },
             { $pull: { friends: req.body.userNick } }, { new: true }, function (err, doc) {
                 // mongoose.disconnect();
 
@@ -121,8 +121,8 @@ class ProfileController {
                 res.json({ success: true, message: "Saving unfollow status!", profile: doc });
             });
     };
-    getAllUsers(req, res, next) {
-        Profile.find({}, function (err, docs) {
+    async getAllUsers(req, res, next) {
+        await Profile.find({}, function (err, docs) {
             // mongoose.disconnect();
             if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
             res.status(200).json({ success: true, users: docs });
