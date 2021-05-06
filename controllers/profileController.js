@@ -1,7 +1,9 @@
 const Profile = require('../models/profile.js');
+const ApiError = require('../error/ApiError.js');
+
 
 class ProfileController {
-    async getAllProfiles(req, res) {
+    async getAllProfiles(req, res, next) {
         const page = parseInt(req.query.page);
         const limit = parseInt(req.query.limit);
 
@@ -27,7 +29,8 @@ class ProfileController {
             // res.paginatedResults = results;
             res.json(results)
         } catch (error) {
-            res.status(500).json({ message: error.message })
+            next(ApiError.dataBaseErrors('Bad Gateway'));
+            return;
         }
     };
 
@@ -35,8 +38,10 @@ class ProfileController {
         console.log(req.params.id);
         await Profile.findOne({ _id: req.params.id }, function (err, doc) {
             // mongoose.disconnect();
-            if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
-
+            if (err) {
+                next(ApiError.dataBaseErrors('Bad Gateway'));
+                return;
+            };
             res.status(200).json({ success: true, user: doc });
         });
     };
@@ -45,10 +50,10 @@ class ProfileController {
         await Profile.findByIdAndUpdate({ _id: req.body.userId },
             { $set: { status: req.body.status } }, { new: true }, function (err, doc) {
                 // mongoose.disconnect();
-                if (err)
-                    return res
-                        .status(500)
-                        .json({ success: false, err: { msg: "Saving fail!" } });
+                if (err) {
+                    next(ApiError.dataBaseErrors('Bad Gateway'));
+                    return;
+                };
                 res.json({ success: true, message: "Saving status!", profile: doc });
             });
 
@@ -57,10 +62,10 @@ class ProfileController {
         await Profile.findByIdAndUpdate({ _id: req.body.userId },
             { $set: { name: req.body.name } }, { new: true }, function (err, doc) {
                 // mongoose.disconnect();
-                if (err)
-                    return res
-                        .status(500)
-                        .json({ success: false, err: { msg: "Saving fail!" } });
+                if (err) {
+                    next(ApiError.dataBaseErrors('Bad Gateway'));
+                    return;
+                };
                 res.json({ success: true, message: "Saving name!", profile: doc });
             });
 
@@ -75,10 +80,10 @@ class ProfileController {
                 }
             }, { new: true }, function (err, doc) {
                 // mongoose.disconnect();
-                if (err)
-                    return res
-                        .status(500)
-                        .json({ success: false, err: { msg: "Saving fail!" } });
+                if (err) {
+                    next(ApiError.dataBaseErrors('Bad Gateway'));
+                    return;
+                };
                 res.json({ success: true, message: "Saving image!", profile: doc });
             });
 
@@ -87,44 +92,47 @@ class ProfileController {
         await Profile.findByIdAndUpdate({ _id: req.body.userId },
             { $set: { avatarIMG: req.body.image } }, { new: true }, function (err, doc) {
                 // mongoose.disconnect();
-                if (err)
-                    return res
-                        .status(500)
-                        .json({ success: false, err: { msg: "Saving fail!" } });
+                if (err) {
+                    next(ApiError.dataBaseErrors('Bad Gateway'));
+                    return;
+                };
                 res.json({ success: true, message: "Saving image!", profile: doc });
             });
 
     };
 
-    async followUpdate(req, res) {
+    followUpdate(req, res) {
         // Знаходимо і оновлюємо
-        await Profile.findOneAndUpdate({ _id: req.body.authId },
+        Profile.findOneAndUpdate({ _id: req.body.authId },
             { $push: { friends: req.body.userNick } }, { new: true }, function (err, doc) {
                 // mongoose.disconnect();
-                if (err)
-                    return res
-                        .status(500)
-                        .json({ success: false, err: { msg: "Saving fail!" } });
+                if (err) {
+                    next(ApiError.dataBaseErrors('Bad Gateway'));
+                    return;
+                };
                 res.json({ success: true, message: "Saving follow status!", profile: doc });
             });
     };
 
-    async unfollowUpdate(req, res) {
-        await Profile.findByIdAndUpdate({ _id: req.body.authId },
+    unfollowUpdate(req, res) {
+        Profile.findByIdAndUpdate({ _id: req.body.authId },
             { $pull: { friends: req.body.userNick } }, { new: true }, function (err, doc) {
                 // mongoose.disconnect();
 
-                if (err)
-                    return res
-                        .status(500)
-                        .json({ success: false, err: { msg: "Saving fail!" } });
+                if (err) {
+                    next(ApiError.dataBaseErrors('Bad Gateway'));
+                    return;
+                };
                 res.json({ success: true, message: "Saving unfollow status!", profile: doc });
             });
     };
     async getAllUsers(req, res, next) {
         await Profile.find({}, function (err, docs) {
             // mongoose.disconnect();
-            if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
+            if (err) {
+                next(ApiError.dataBaseErrors('Bad Gateway'));
+                return;
+            };
             res.status(200).json({ success: true, users: docs });
         });
     };

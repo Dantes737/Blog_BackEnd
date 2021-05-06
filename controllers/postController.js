@@ -1,18 +1,25 @@
 const Posts = require('../models/post.js');
+const ApiError = require('../error/ApiError.js');
 
 class PostController {
 
     async getPosts(req, res, next) {
         await Posts.find({}, function (err, docs) {
             // mongoose.disconnect();
-            if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
+            if (err) {
+                next(ApiError.dataBaseErrors('Bad Gateway'));
+                return;
+            };
             res.status(200).json({ success: true, posts: docs });
         });
     };
     async getOnlyUserPosts(req, res, next) {
         await Posts.find({ userNick: req.params.nick }, function (err, docs) {
             // mongoose.disconnect();
-            if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
+            if (err) {
+                next(ApiError.dataBaseErrors('Bad Gateway'));
+                return;
+            };
             res.status(200).json({ success: true, posts: docs });
         });
     };
@@ -29,12 +36,18 @@ class PostController {
         });
         //6. Збереження документа
         await post.save(function (err, userPost) {
-            if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
+            if (err) {
+                next(ApiError.dataBaseErrors('Bad Gateway'));
+                return;
+            };
         });
 
         await Posts.find({}, function (err, docs) {
             // mongoose.disconnect();
-            if (err) return res.status(500).json({ err: { msg: "Fetch faild!" } });
+            if (err) {
+                next(ApiError.dataBaseErrors('Bad Gateway'));
+                return;
+            };
             res.status(200).json({ success: true, posts: docs });
         });
 
@@ -48,20 +61,20 @@ class PostController {
             }, function (err, doc) {
                 // mongoose.disconnect();
 
-                if (err)
-                    return res
-                        .status(500)
-                        .json({ success: false, err: { msg: "Saving faild!" } });
+                if (err) {
+                    next(ApiError.dataBaseErrors('Bad Gateway'));
+                    return;
+                };
                 res.json({ success: true });
             });
     };
 
     async deletePost(req, res, next) {
         await Posts.findOneAndDelete({ _id: req.params.id }, function (err, doc) {
-            if (err)
-                return res
-                    .status(500)
-                    .json({ success: false, err: { msg: "Saving faild!" } });
+            if (err) {
+                next(ApiError.dataBaseErrors('Bad Gateway'));
+                return;
+            };
             res.json({ success: true, post: doc });
         });
     };

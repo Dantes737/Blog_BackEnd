@@ -72,7 +72,7 @@ class UserController {
           avatarIMG: "https://walkersarewelcome.org.uk/wp-content/uploads/computer-icons-google-account-icon-design-login-png-favpng-jFjxPac6saRuDE3LiyqsYTEZM.jpg",
           status: "Your status"
         });
-       await profile.save();
+        profile.save();
         /////////////
         const token = prepareToken(
           {
