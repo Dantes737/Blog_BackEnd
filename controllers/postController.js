@@ -35,13 +35,7 @@ class PostController {
             title: req.body.title
         });
         //6. Збереження документа
-        await post.save(function (err, userPost) {
-            if (err) {
-                next(ApiError.dataBaseErrors('Bad Gateway'));
-                return;
-            };
-        });
-
+        await post.save();
         await Posts.find({}, function (err, docs) {
             // mongoose.disconnect();
             if (err) {
