@@ -74,12 +74,6 @@ class UserController {
         });
         profile.save();
         /////////////
-        const token = prepareToken(
-          {
-            id: user._id,
-            nick: user.nick,
-          }
-        );
         return res.status(201).json({
           result: "Success!"
         });
